@@ -7,6 +7,7 @@ class ColorHandler {
 		this.colors[COLOR_GREEN] = color('#00ff00');
 		this.colors[COLOR_YELLOW] = color('#ffff00');
 		this.colors[COLOR_BLACK] = color('#000000');
+		this.colors[COLOR_WHITE] = color('#ffffff');
 	}
 
 	/* Receives the name of the color and returns the p5js color object. */
