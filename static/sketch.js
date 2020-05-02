@@ -26,6 +26,7 @@ const HOUSE_SPOT_COLORS = {
 const SPOT_TYPE_NORMAL = 'normal';
 const SPOT_TYPE_SAFE = 'safe';
 const SPOT_TYPE_HOUSE = 'house';
+const SPOT_TYPE_SPECIAL = 'special';
 
 function setup() {
 	let canvasWidth = 690;

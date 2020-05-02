@@ -83,7 +83,42 @@ class Tabletop {
 				}
 
 				/* Fill in the spot. */
-				this.spots[currentNumber] = new Spot(allShapes[j][i], currentNumber);
+				this.spots[currentNumber] = new Spot(allShapes[j][i], currentNumber, SPOT_TYPE_NORMAL, undefined);
+			}
+		}
+
+		/* Create a dictionary for the special spots. */
+		this.specialSpots = {};
+
+		/* Decide the order of the color from the bottom. */
+		let specialSpotsColors = {
+			0: COLOR_YELLOW,
+			1: COLOR_BLUE,
+			2: COLOR_RED,
+			3: COLOR_GREEN,
+		};
+
+		/* Create the shapes of the special spots on the relative center. */
+		let bottomSpecialShapes = [];
+		for (let i = 0; i < 7; i++) {
+			bottomSpecialShapes.push([]);
+			bottomSpecialShapes[i].push({x: initialxBlock + spotWidth, y: initialyBlock - (6 - i) * spotHeight});
+			bottomSpecialShapes[i].push({x: initialxBlock + 2 * spotWidth, y: initialyBlock - (6 - i) * spotHeight});
+			bottomSpecialShapes[i].push({x: initialxBlock + 2 * spotWidth, y: initialyBlock - (6 - i) * spotHeight - spotHeight});
+			bottomSpecialShapes[i].push({x: initialxBlock + spotWidth, y: initialyBlock - (6 - i) * spotHeight - spotHeight});
+		}
+
+		/* Rotate these special shapes in the four directions. */
+		let allSpecialShapes = mathHandler.applyRotationsAndCanvasCoordinates(bottomSpecialShapes, center);
+
+		/* Insert them into the dictionary with the appropriate color. */
+		this.specialSpots[COLOR_YELLOW] = {};
+		this.specialSpots[COLOR_BLUE] = {};
+		this.specialSpots[COLOR_RED] = {};
+		this.specialSpots[COLOR_GREEN] = {};
+		for (let j = 0; j < 4; j++) {
+			for (let i = 0; i < allSpecialShapes[j].length; i++) {
+				this.specialSpots[specialSpotsColors[j]][i] = new Spot(allSpecialShapes[j][i], i, SPOT_TYPE_SPECIAL, specialSpotsColors[j]);
 			}
 		}
 	}
@@ -97,6 +132,13 @@ class Tabletop {
 		/* Call display on all the spots. */
 		for (let spot of Object.values(this.spots)) {
 			spot.display();
+		}
+
+		/* Call display on all the special spots. */
+		for (let color of Object.keys(this.specialSpots)) {
+			for (let spot of Object.values(this.specialSpots[color])) {
+				spot.display();
+			}
 		}
 	}
 }
