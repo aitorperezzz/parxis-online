@@ -75,7 +75,7 @@ class Tabletop {
 		let initialNumber = 5, currentNumber;
 		for (let j = 0; j < 4; j++) {
 			for (let i = 0; i < allShapes[j].length; i++) {
-				
+
 				/* Decide the number of this spot. */
 				currentNumber = initialNumber + j * 17 + i;
 				if (currentNumber > 68) {
@@ -83,7 +83,7 @@ class Tabletop {
 				}
 
 				/* Fill in the spot. */
-				this.spots[currentNumber] = new Spot(allShapes[j][i], COLOR_WHITE, currentNumber);
+				this.spots[currentNumber] = new Spot(allShapes[j][i], currentNumber);
 			}
 		}
 	}
