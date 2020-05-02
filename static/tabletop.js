@@ -3,92 +3,88 @@ class Tabletop {
 		this.canvasWidth = canvasWidth;
 		this.canvasHeight = canvasHeight;
 
-		/* Decide global dimensions and the global center position. */
+		/* Decide global dimensions and the global center. */
 		let canvasSize = canvasWidth;
 		let center = {x: canvasSize / 2, y: canvasSize / 2};
 
-		/* Create the vertices for the base in the upper left corner (global coordinates). */
+		/* Create the shape of the base in the upper left corner (using global coordinates). */
 		let baseSize = canvasSize / 3;
-		let initialBaseVertices = [];
-		initialBaseVertices.push({x: - canvasSize / 2, y: canvasSize / 2});
-		initialBaseVertices.push({x: - canvasSize / 2 + baseSize, y: canvasSize / 2});
-		initialBaseVertices.push({x: - canvasSize / 2 + baseSize, y: canvasSize / 2 - baseSize});
-		initialBaseVertices.push({x: - canvasSize / 2, y: canvasSize / 2 - baseSize});
+		let initialBaseShape = [];
+		initialBaseShape.push({x: - canvasSize / 2, y: canvasSize / 2});
+		initialBaseShape.push({x: - canvasSize / 2 + baseSize, y: canvasSize / 2});
+		initialBaseShape.push({x: - canvasSize / 2 + baseSize, y: canvasSize / 2 - baseSize});
+		initialBaseShape.push({x: - canvasSize / 2, y: canvasSize / 2 - baseSize});
 
 		/* Decide the positions of each color. */
-		let basePositions = {
+		let baseColors = {
 			0: COLOR_RED,
 			1: COLOR_GREEN,
 			2: COLOR_YELLOW,
 			3: COLOR_BLUE,
-		}
+		};
 
-		/* Create the four bases, one for each player. */
+		/* Create four bases, one for each player. */
 		this.bases = {};
-		let currentBaseVertices, currentColor, currentCanvasBaseVertices;
+		let allBaseShapes = mathHandler.applyRotationsAndCanvasCoordinates([initialBaseShape], center);
 		for (let j = 0; j < 4; j++) {
-			/* Rotate the vertices of the initial base. */
-			currentBaseVertices = mathHandler.rotateBatch(initialBaseVertices, j * Math.PI / 2);
-
-			/* Convert all the vertices to the canvas coordinate system. */
-			currentCanvasBaseVertices = mathHandler.getCanvasCoordinatesBatch(currentBaseVertices, center);
-
-			/* Decide the color of this base from the dictionary. */
-			currentColor = basePositions[j];
-
-			/* Add the new base. */
-			this.bases[currentColor] = new Base(currentCanvasBaseVertices, currentColor);
+			let currentColor = baseColors[j];
+			this.bases[currentColor] = new Base(allBaseShapes[j][0], currentColor);
 		}
 
 		/* Create an empty dictionary for the spots. */
 		this.spots = {};
 
-		/* Decide the block positions relative to the global center. */
+		/* Decide the block position relative to the global center and the spot dimensions. */
 		let initialxBlock = - canvasSize / 6;
 		let initialyBlock = - canvasSize / 6;
 		let spotHeight = canvasSize / 24;
 		let spotWidth = canvasSize / 9;
-		let initialNumber, currentNumber;
-		let initialVertices, currentVertices, currentCanvasVertices;
 
-		/* Create all spots on the relative left side. */
-		initialNumber = 5;
+		/* Create an array to store the shapes of the bottom block. */
+		let bottomShapes = [];
+
+		/* Add the shapes of the left side of the bottom block. */
 		for (let i = 0; i < 8; i++) {
-			/* Modify the initial vertices. */
-			initialVertices = [];
-			initialVertices.push({x: initialxBlock, y: initialyBlock - i * spotHeight});
-			initialVertices.push({x: initialxBlock + spotWidth, y: initialyBlock - i * spotHeight});
-			initialVertices.push({x: initialxBlock + spotWidth, y: initialyBlock - i * spotHeight - spotHeight});
-			initialVertices.push({x: initialxBlock, y: initialyBlock - i * spotHeight - spotHeight});
-
-			mathHandler.fillCorrespondingFourSpots(initialNumber, initialVertices, center, this.spots);
-			initialNumber += 1;
+			bottomShapes.push([]);
+			bottomShapes[i].push({x: initialxBlock, y: initialyBlock - i * spotHeight});
+			bottomShapes[i].push({x: initialxBlock + spotWidth, y: initialyBlock - i * spotHeight});
+			bottomShapes[i].push({x: initialxBlock + spotWidth, y: initialyBlock - i * spotHeight - spotHeight});
+			bottomShapes[i].push({x: initialxBlock, y: initialyBlock - i * spotHeight - spotHeight});
 		}
 
-		/* Create the middle spot. */
-		initialVertices = [];
-		initialVertices.push({x: initialxBlock + spotWidth, y: initialyBlock - 7 * spotHeight});
-		initialVertices.push({x: initialxBlock + 2 * spotWidth, y: initialyBlock - 7 * spotHeight});
-		initialVertices.push({x: initialxBlock + 2 * spotWidth, y: initialyBlock - 8 * spotHeight});
-		initialVertices.push({x: initialxBlock + spotWidth, y: initialyBlock - 8 * spotHeight});
+		/* Add the central shape. */
+		bottomShapes.push([]);
+		bottomShapes[8].push({x: initialxBlock + spotWidth, y: initialyBlock - 7 * spotHeight});
+		bottomShapes[8].push({x: initialxBlock + 2 * spotWidth, y: initialyBlock - 7 * spotHeight});
+		bottomShapes[8].push({x: initialxBlock + 2 * spotWidth, y: initialyBlock - 8 * spotHeight});
+		bottomShapes[8].push({x: initialxBlock + spotWidth, y: initialyBlock - 8 * spotHeight});
 
-		/* Select an initial number. */
-		initialNumber = 13;
-
-		mathHandler.fillCorrespondingFourSpots(initialNumber, initialVertices, center, this.spots);
-
-		/* Create all the spots on the relative right side. */
-		initialNumber = 21;
+		/* Add the shapes on the relative right side of the bottom block. */
 		for (let i = 0; i < 8; i++) {
-			/* Modify the initial vertices. */
-			initialVertices = [];
-			initialVertices.push({x: initialxBlock + 2 * spotWidth, y: initialyBlock - i * spotHeight});
-			initialVertices.push({x: initialxBlock + 3 * spotWidth, y: initialyBlock - i * spotHeight});
-			initialVertices.push({x: initialxBlock + 3 * spotWidth, y: initialyBlock - i * spotHeight - spotHeight});
-			initialVertices.push({x: initialxBlock + 2 * spotWidth, y: initialyBlock - i * spotHeight - spotHeight});
+			bottomShapes.push([]);
+			bottomShapes[9 + i].push({x: initialxBlock + 2 * spotWidth, y: initialyBlock - (7 - i) * spotHeight});
+			bottomShapes[9 + i].push({x: initialxBlock + 3 * spotWidth, y: initialyBlock - (7 - i) * spotHeight});
+			bottomShapes[9 + i].push({x: initialxBlock + 3 * spotWidth, y: initialyBlock - (7 - i) * spotHeight - spotHeight});
+			bottomShapes[9 + i].push({x: initialxBlock + 2 * spotWidth, y: initialyBlock - (7 - i) * spotHeight - spotHeight});
+		}
 
-			mathHandler.fillCorrespondingFourSpots(initialNumber, initialVertices, center, this.spots);
-			initialNumber -= 1;
+		/* Get all the shapes in canvas coordinates. */
+		let allShapes = mathHandler.applyRotationsAndCanvasCoordinates(bottomShapes, center);
+
+		/* Fill all the spots with the appropriate number. */
+		let initialNumber = 5, currentNumber;
+		for (let j = 0; j < 4; j++) {
+			for (let i = 0; i < allShapes[j].length; i++) {
+				
+				/* Decide the number of this spot. */
+				currentNumber = initialNumber + j * 17 + i;
+				if (currentNumber > 68) {
+					currentNumber = currentNumber % 68;
+				}
+
+				/* Fill in the spot. */
+				this.spots[currentNumber] = new Spot(allShapes[j][i], COLOR_WHITE, currentNumber);
+			}
 		}
 	}
 

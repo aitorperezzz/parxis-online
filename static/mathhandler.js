@@ -52,25 +52,21 @@ class MathHandler {
 		return {x: totalx / length, y: totaly / length};
 	}
 
-	/* Receives a spot calculated at the bottom and fills the four total
-	positions for this spot. */
-	fillCorrespondingFourSpots(initialNumber, initialVertices, center, spots) {
-		let currentNumber, currentVertices, currentCanvasVertices;
+	/* Applies rotations to the four directions and returns canvas coordinates. */
+	applyRotationsAndCanvasCoordinates(shapes, center) {
+		let result = [];
+		let currentShape;
 		for (let j = 0; j < 4; j++) {
-			/* Calculate the correct number from the current initial number. */
-			currentNumber = initialNumber + j * 17;
-			if (currentNumber > 68) {
-				currentNumber = currentNumber % 68;
+			result.push([]);
+			for (let shape of shapes) {
+				/* Rotate this shape and transform to canvas coordinates. */
+				currentShape = this.getCanvasCoordinatesBatch(this.rotateBatch(shape, j * Math.PI / 2), center);
+
+				/* Add the new shape to the list. */
+				result[j].push(currentShape);
 			}
-
-			/* Rotate the vertices if needed. */
-			currentVertices = this.rotateBatch(initialVertices, j * Math.PI / 2);
-
-			/* Translate all the vertices to the canvas coordinate system. */
-			currentCanvasVertices = this.getCanvasCoordinatesBatch(currentVertices, center);
-
-			/* Insert this spot in the dictionary. */
-			spots[currentNumber] = new Spot(currentCanvasVertices, COLOR_WHITE, currentNumber);
 		}
+
+		return result;
 	}
 }
