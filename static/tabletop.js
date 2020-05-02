@@ -91,7 +91,7 @@ class Tabletop {
 		this.specialSpots = {};
 
 		/* Decide the order of the color from the bottom. */
-		let specialSpotsColors = {
+		let finishColors = {
 			0: COLOR_YELLOW,
 			1: COLOR_BLUE,
 			2: COLOR_RED,
@@ -118,8 +118,25 @@ class Tabletop {
 		this.specialSpots[COLOR_GREEN] = {};
 		for (let j = 0; j < 4; j++) {
 			for (let i = 0; i < allSpecialShapes[j].length; i++) {
-				this.specialSpots[specialSpotsColors[j]][i] = new Spot(allSpecialShapes[j][i], i, SPOT_TYPE_SPECIAL, specialSpotsColors[j]);
+				this.specialSpots[finishColors[j]][i] = new Spot(allSpecialShapes[j][i], i, SPOT_TYPE_SPECIAL, finishColors[j]);
 			}
+		}
+
+		/* Create a dictionary for the finish lines. */
+		this.finishLines = {};
+
+		/* Create the finish line shape for the player at the bottom. */
+		let initialFinishLineShape = [];
+		initialFinishLineShape.push({x: 0, y: 0});
+		initialFinishLineShape.push({x: initialxBlock, y: initialyBlock});
+		initialFinishLineShape.push({x: Math.abs(initialxBlock), y: initialyBlock});
+
+		/* Get the four finish line shapes. */
+		let finishLinesShapes = mathHandler.applyRotationsAndCanvasCoordinates([initialFinishLineShape], center);
+
+		/* Add all finish lines to the dictionary. */
+		for (let j = 0; j < 4; j++) {
+			this.finishLines[finishColors[j]] = new FinishLine(finishLinesShapes[j][0], finishColors[j]);
 		}
 	}
 
@@ -139,6 +156,11 @@ class Tabletop {
 			for (let spot of Object.values(this.specialSpots[color])) {
 				spot.display();
 			}
+		}
+
+		/* Display the finish lines. */
+		for (let finishLine of Object.values(this.finishLines)) {
+			finishLine.display();
 		}
 	}
 }
